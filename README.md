@@ -12,8 +12,8 @@ reading the current system time.
 The interface between the WebAssembly module ("guest") and host is defined as
 an ABI. The SDK implementations provide a higher level API around this interface.
 
-WebAssembly can only pass integers and floats across the boundary. In order to
-pass other data types we pass pointers to WebAssembly guest memory locations.
+WebAssembly can only pass integers and floats across the guest/host boundary. In
+order to pass other data types we pass pointers to WebAssembly guest memory locations.
 To keep the PoC simple, all get and put field operations pass serialized JSON
 strings.
 
