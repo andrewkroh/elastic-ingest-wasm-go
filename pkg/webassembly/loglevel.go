@@ -46,7 +46,6 @@ func (l LogLevel) String() string {
 		return name
 	}
 	return strconv.Itoa(int(l))
-
 }
 
 func (l LogLevel) toZapLevel() zapcore.Level {

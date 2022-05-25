@@ -39,6 +39,7 @@ type Host interface {
 
 type Processor struct {
 	pool *sessionPool
+	wz   *wazeroSession
 }
 
 type Config struct {
@@ -50,6 +51,11 @@ func NewProcessor(log *zap.Logger, host Host, wasm io.Reader, config Config) (*P
 	wasmModuleBytes, err := ioutil.ReadAll(wasm)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read module data: %w", err)
+	}
+
+	wz, err := newWazeroSession(wasmModuleBytes)
+	if err != nil {
+		return nil, fmt.Errorf("failed create wazero sessions: %w", err)
 	}
 
 	engine := wasmer.NewEngine()
@@ -64,15 +70,15 @@ func NewProcessor(log *zap.Logger, host Host, wasm io.Reader, config Config) (*P
 		return nil, fmt.Errorf("failed to create WASM session: %w", err)
 	}
 
-	return &Processor{pool: pool}, nil
+	return &Processor{pool: pool, wz: wz}, nil
 }
 
 func (p *Processor) Process(event Event) error {
 	// Use a pool of sessions to allow concurrent operations.
-	session := p.pool.Get()
-	defer p.pool.Put(session)
+	// session := p.pool.Get()
+	// defer p.pool.Put(session)
 
-	status, err := session.guestProcess(event)
+	status, err := p.wz.guestProcess(event)
 	if err != nil {
 		return err
 	}

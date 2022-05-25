@@ -21,6 +21,7 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"runtime"
 
 	"go.uber.org/zap"
 
@@ -216,6 +217,9 @@ func (hc *session) elasticGetField(key string) ([]byte, error) {
 }
 
 func (hc *session) elasticPutField(key string, value []byte) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	runtime.Goexit()
 	var v interface{}
 	if err := json.Unmarshal(value, &v); err != nil {
 		return err
